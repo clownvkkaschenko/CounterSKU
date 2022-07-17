@@ -132,7 +132,7 @@ def count_of_hours(update, context):
         context.user_data[WORKING_HOURS] = update.message.text
         CNT_HOURS = int(context.user_data[WORKING_HOURS])
         SALARY = float(CNT_SKU * UNIT_RATE_SKU + CNT_HOURS * HOURLY_RATE)
-        NUMBER_OF_SHIFTS += 1
+        NUMBER_OF_SHIFTS = 1
         update.message.reply_text(
             'Все данные на сегодня собраны ✅',
             reply_markup=buttons
