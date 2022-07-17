@@ -121,7 +121,7 @@ def count_of_hours(update, context):
     chat = update.effective_chat
     buttons = ReplyKeyboardRemove()
     if update.message.text.lower() == 'отмена':
-        CNT_SKU = 0
+        CNT_SKU = DBHelper.sku_db(chat.id)
         context.bot.send_message(
             chat_id=chat.id,
             text='Данные остались без изменений ❌',
