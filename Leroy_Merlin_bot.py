@@ -32,7 +32,6 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('start', start))
 
     updater.start_polling()
-    updater.idle()
 
     while True:
         logging.basicConfig(level=logging.INFO)
