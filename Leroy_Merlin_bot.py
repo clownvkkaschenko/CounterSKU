@@ -104,7 +104,7 @@ def count_of_sku(update, context):
         return ConversationHandler.END
     elif update.message.text.isdigit():
         context.user_data[SKU] = update.message.text
-        CNT_SKU += int(context.user_data[SKU])
+        CNT_SKU = int(context.user_data[SKU])
         update.message.reply_text(
             'Напиши сколько часов работал сегодня',
             reply_markup=save_buttons
@@ -130,29 +130,20 @@ def count_of_hours(update, context):
         return ConversationHandler.END
     elif update.message.text.isdigit():
         context.user_data[WORKING_HOURS] = update.message.text
-        CNT_HOURS += int(context.user_data[WORKING_HOURS])
+        CNT_HOURS = int(context.user_data[WORKING_HOURS])
         SALARY = float(CNT_SKU * UNIT_RATE_SKU + CNT_HOURS * HOURLY_RATE)
         NUMBER_OF_SHIFTS += 1
         update.message.reply_text(
             'Все данные на сегодня собраны ✅',
             reply_markup=buttons
             )
-        if NUMBER_OF_SHIFTS == 1:
-            DBHelper.edit_db(
-                count_sku=DBHelper.sku_db(chat.id) + CNT_SKU,
-                count_hours=DBHelper.hours_db(chat.id) + CNT_HOURS,
-                count_shifts=DBHelper.shifts_db(chat.id) + NUMBER_OF_SHIFTS,
-                salary=DBHelper.salary_db(chat.id) + SALARY,
-                chat_id=chat.id
-            )
-        else:
-            DBHelper.edit_db(
-                count_sku=CNT_SKU,
-                count_hours=CNT_HOURS,
-                count_shifts=NUMBER_OF_SHIFTS,
-                salary=SALARY,
-                chat_id=chat.id
-            )
+        DBHelper.edit_db(
+            count_sku=DBHelper.sku_db(chat.id) + CNT_SKU,
+            count_hours=DBHelper.hours_db(chat.id) + CNT_HOURS,
+            count_shifts=DBHelper.shifts_db(chat.id) + NUMBER_OF_SHIFTS,
+            salary=DBHelper.salary_db(chat.id) + SALARY,
+            chat_id=chat.id
+        )
         return ConversationHandler.END
     else:
         update.message.reply_text('Введи просто цифру')
