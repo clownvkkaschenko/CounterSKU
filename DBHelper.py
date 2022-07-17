@@ -76,59 +76,61 @@ def hourly_rate_db(hourly_rate, salary, chat_id):
 def salary_db(chat_id):
     """The method retrieves the user's salary from the database."""
     cursor.execute(
-        'SELECT * from hard_workers_data where chat_id = %s', (chat_id,)
+        'SELECT salary from hard_workers_data where chat_id = %s', (chat_id,)
     )
-    record = cursor.fetchone()
-    return record[4]
+    record, = cursor.fetchone()
+    return record
 
 
 def sku_db(chat_id):
     """The method gets the number of user SKUs from the database."""
     cursor.execute(
-        'SELECT * from hard_workers_data where chat_id = %s', (chat_id,)
+        'SELECT count_sku from hard_workers_data where chat_id = %s', (chat_id,)
     )
-    record = cursor.fetchone()
-    return record[2]
+    record, = cursor.fetchone()
+    return record
 
 
 def hours_db(chat_id):
     """The method gets the user's working hours from the database."""
     cursor.execute(
-        'SELECT * from hard_workers_data where chat_id = %s', (chat_id,)
+        'SELECT count_hours from hard_workers_data where chat_id = %s', (chat_id,)
     )
-    record = cursor.fetchone()
-    return record[3]
+    record, = cursor.fetchone()
+    return record
 
 
 def shifts_db(chat_id):
     """The method gets the number of user shifts from the database."""
     cursor.execute(
-        'SELECT * from hard_workers_data where chat_id = %s', (chat_id,)
+        'SELECT count_shifts from hard_workers_data where chat_id = %s', (chat_id,)
     )
-    record = cursor.fetchone()
-    return record[6]
+    record, = cursor.fetchone()
+    return record
 
 
 def per_sku_db(chat_id):
     """The method gets the user's SKU bid from the database."""
     cursor.execute(
-        'SELECT * from hard_workers_data where chat_id = %s', (chat_id,)
+        'SELECT unit_rate_sku from hard_workers_data where chat_id = %s', (chat_id,)
     )
-    record = cursor.fetchone()
-    return record[7]
+    record, = cursor.fetchone()
+    return record
 
 
 def per_hours_db(chat_id):
     """The method gets the user's hourly rate from the database."""
     cursor.execute(
-        'SELECT * from hard_workers_data where chat_id = %s', (chat_id,)
+        'SELECT hourly_rate from hard_workers_data where chat_id = %s', (chat_id,)
     )
-    record = cursor.fetchone()
-    return record[8]
+    record, = cursor.fetchone()
+    return record
 
 
 def username_db(chat_id):
+    """The method gets the username from the database.."""
     cursor.execute(
         'SELECT username from hard_workers_data where chat_id = %s', (chat_id,)
     )
-    return cursor.fetchone()
+    record = cursor.fetchone()
+    return record
