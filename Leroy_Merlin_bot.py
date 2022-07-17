@@ -27,11 +27,11 @@ TOKEN = os.getenv('TOKEN')
 def start(update, context):
     """The method starts working when the bot starts."""
     chat = update.effective_chat
-    username = update.message.chat.username
+    name = update.message.chat.first_name
     context.bot.send_message(
         chat_id=chat.id,
         text='Привет, {}, я помогу тебе быстро узнать сколько ты заработал '
-        'за месяц в Леруа Мерлен'.format(username)
+        'за месяц в Леруа Мерлен'.format(name)
     )
     context.bot.send_message(
         chat_id=chat.id,
@@ -39,7 +39,7 @@ def start(update, context):
         '/help'
     )
     if not DBHelper.username_db(chat_id=chat.id):
-        DBHelper.add_to_db(username=username, chat_id=chat.id)
+        DBHelper.add_to_db(name=name, chat_id=chat.id)
 
 
 def help_description(update, context):

@@ -18,7 +18,7 @@ conn = psycopg2.connect(DB_URI, sslmode="require")
 cursor = conn.cursor()
 
 
-def add_to_db(username: str, chat_id: int, salary=0.0,
+def add_to_db(name: str, chat_id: int, salary=0.0,
               count_sku=0, count_hours=0, count_shifts=0,
               unit_rate_sku=7.3, hourly_rate=124.0):
     """The method adds a new user to the database."""
@@ -26,7 +26,7 @@ def add_to_db(username: str, chat_id: int, salary=0.0,
         'INSERT INTO hard_workers_data (username, chat_id, salary, '
         'count_sku, count_hours, count_shifts, unit_rate_sku, hourly_rate) '
         'VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-        (username, chat_id, salary, count_sku, count_hours,
+        (name, chat_id, salary, count_sku, count_hours,
          count_shifts, unit_rate_sku, hourly_rate)
     )
     conn.commit()
