@@ -117,10 +117,11 @@ def count_of_sku(update, context):
 
 def count_of_hours(update, context):
     """The method saves the number of working hours."""
-    global CNT_HOURS, NUMBER_OF_SHIFTS, SALARY
+    global CNT_HOURS, NUMBER_OF_SHIFTS, SALARY, CNT_SKU
     chat = update.effective_chat
     buttons = ReplyKeyboardRemove()
     if update.message.text.lower() == 'отмена':
+        CNT_SKU = 0
         context.bot.send_message(
             chat_id=chat.id,
             text='Данные остались без изменений ❌',
