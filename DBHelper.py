@@ -78,8 +78,8 @@ def salary_db(chat_id):
     cursor.execute(
         'SELECT salary from hard_workers_data where chat_id = %s', (chat_id,)
     )
-    record, = cursor.fetchone()
-    return record
+    record = cursor.fetchone()
+    return record[0]
 
 
 def sku_db(chat_id):
@@ -87,8 +87,8 @@ def sku_db(chat_id):
     cursor.execute(
         'SELECT count_sku from hard_workers_data where chat_id = %s', (chat_id,)
     )
-    record, = cursor.fetchone()
-    return record
+    record = cursor.fetchone()
+    return record[0]
 
 
 def hours_db(chat_id):
@@ -96,8 +96,8 @@ def hours_db(chat_id):
     cursor.execute(
         'SELECT count_hours from hard_workers_data where chat_id = %s', (chat_id,)
     )
-    record, = cursor.fetchone()
-    return record
+    record = cursor.fetchone()
+    return record[0]
 
 
 def shifts_db(chat_id):
@@ -105,8 +105,8 @@ def shifts_db(chat_id):
     cursor.execute(
         'SELECT count_shifts from hard_workers_data where chat_id = %s', (chat_id,)
     )
-    record, = cursor.fetchone()
-    return record
+    record = cursor.fetchone()
+    return record[0]
 
 
 def per_sku_db(chat_id):
@@ -114,8 +114,8 @@ def per_sku_db(chat_id):
     cursor.execute(
         'SELECT unit_rate_sku from hard_workers_data where chat_id = %s', (chat_id,)
     )
-    record, = cursor.fetchone()
-    return record
+    record = cursor.fetchone()
+    return record[0]
 
 
 def per_hours_db(chat_id):
@@ -123,8 +123,8 @@ def per_hours_db(chat_id):
     cursor.execute(
         'SELECT hourly_rate from hard_workers_data where chat_id = %s', (chat_id,)
     )
-    record, = cursor.fetchone()
-    return record
+    record = cursor.fetchone()
+    return record[0]
 
 
 def username_db(chat_id):
