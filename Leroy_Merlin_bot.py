@@ -1,6 +1,4 @@
-import logging
 import os
-import time
 
 from dotenv import load_dotenv
 from telegram import ParseMode, ReplyKeyboardMarkup, ReplyKeyboardRemove
@@ -366,11 +364,6 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('salary', salary))
 
     updater.start_polling()
-
-    while True:
-        logging.basicConfig(level=logging.INFO)
-        logging.info('Раз в 10 минут и сообщение отправляется')
-        time.sleep(600)
 
 
 if __name__ == '__main__':
