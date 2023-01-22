@@ -1,1 +1,1 @@
-worker: python Leroy_Merlin_bot.py
+worker: python leroymerlin_bot.py

@@ -5,18 +5,18 @@ from telegram import ParseMode, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import (CommandHandler, ConversationHandler, Filters,
                           MessageHandler, Updater)
 
-import DBHelper
+import db_helper
 
 load_dotenv()
 
-CNT_SKU: int = 0  # количество SKU
-CNT_HOURS: int = 0  # количество рабочих часов
-NUMBER_OF_SHIFTS: int = 0  # количество смен
-SALARY: float = 0.0  # зарплата
-UNIT_RATE_SKU: float = 7.3  # ставка за единицу SKU
-HOURLY_RATE: float = 124.0  # почасовая ставка
+cnt_sku: int = 0  # количество SKU
+cnt_hours: int = 0  # количество рабочих часов
+number_of_shifts: int = 0  # количество смен
+salary: float = 0.0  # зарплата
+unit_rate_sku: float = 7.3  # ставка за единицу SKU
+hourly_rate: float = 124.0  # почасовая ставка
 
-END, SKU, WORKING_HOURS, EDIT_SKU, SAVE_HOURLY_RATE = range(-1, 4)
+END, SKU, WORKING_HOURS, EDIT_SKU, SAVE_hourly_rate = range(-1, 4)
 CNFRM_CNT_RESET = 4
 
 TOKEN = os.getenv('TOKEN')
@@ -36,8 +36,8 @@ def start(update, context):
         text='Чтобы получить инструкцию по работе бота, нажми на команду '
         '/help'
     )
-    if not DBHelper.username_db(chat_id=chat.id):
-        DBHelper.add_to_db(name=name, chat_id=chat.id)
+    if not db_helper.username_db(chat_id=chat.id):
+        db_helper.add_to_db(name=name, chat_id=chat.id)
 
 
 def help_description(update, context):
@@ -68,8 +68,8 @@ def bot_commands(update, context):
         '/reset_counter - Сбрасывает количество SKU и отработанных часов '
         '(нажимай в новом рабочем месяце)\n\n<b>Команды изменений ставки:</b>'
         '\n/edit_sku - Изменить ставку за единицу SKU (сейчас ставка '
-        f'{DBHelper.per_sku_db(chat.id)}р.)\n/edit_working_hours - Изменить '
-        f'ставку за час работы (сейчас ставка {DBHelper.per_hours_db(chat.id)}'
+        f'{db_helper.per_sku_db(chat.id)}р.)\n/edit_working_hours - Изменить '
+        f'ставку за час работы (сейчас ставка {db_helper.per_hours_db(chat.id)}'
         'р.)\n',
         parse_mode=ParseMode.HTML,
     )
@@ -89,7 +89,7 @@ def data_for_that_day(update, context):
 
 def count_of_sku(update, context):
     """The method saves count SKU and asks you to enter working hours."""
-    global CNT_SKU
+    global cnt_sku
     chat = update.effective_chat
     buttons = ReplyKeyboardRemove()
     save_buttons = ReplyKeyboardMarkup([['Отмена']], resize_keyboard=True)
@@ -102,7 +102,7 @@ def count_of_sku(update, context):
         return ConversationHandler.END
     elif update.message.text.isdigit():
         context.user_data[SKU] = update.message.text
-        CNT_SKU = int(context.user_data[SKU])
+        cnt_sku = int(context.user_data[SKU])
         update.message.reply_text(
             'Напиши сколько часов работал сегодня',
             reply_markup=save_buttons
@@ -115,11 +115,11 @@ def count_of_sku(update, context):
 
 def count_of_hours(update, context):
     """The method saves the number of working hours."""
-    global CNT_HOURS, NUMBER_OF_SHIFTS, SALARY, CNT_SKU
+    global cnt_hours, number_of_shifts, salary, cnt_sku
     chat = update.effective_chat
     buttons = ReplyKeyboardRemove()
     if update.message.text.lower() == 'отмена':
-        CNT_SKU = DBHelper.sku_db(chat.id)
+        cnt_sku = db_helper.sku_db(chat.id)
         context.bot.send_message(
             chat_id=chat.id,
             text='Данные остались без изменений ❌',
@@ -128,18 +128,18 @@ def count_of_hours(update, context):
         return ConversationHandler.END
     elif update.message.text.isdigit():
         context.user_data[WORKING_HOURS] = update.message.text
-        CNT_HOURS = int(context.user_data[WORKING_HOURS])
-        SALARY = float(CNT_SKU * UNIT_RATE_SKU + CNT_HOURS * HOURLY_RATE)
-        NUMBER_OF_SHIFTS = 1
+        cnt_hours = int(context.user_data[WORKING_HOURS])
+        salary = float(cnt_sku * unit_rate_sku + cnt_hours * hourly_rate)
+        number_of_shifts = 1
         update.message.reply_text(
             'Все данные на сегодня собраны ✅',
             reply_markup=buttons
             )
-        DBHelper.edit_db(
-            count_sku=DBHelper.sku_db(chat.id) + CNT_SKU,
-            count_hours=DBHelper.hours_db(chat.id) + CNT_HOURS,
-            count_shifts=DBHelper.shifts_db(chat.id) + NUMBER_OF_SHIFTS,
-            salary=DBHelper.salary_db(chat.id) + SALARY,
+        db_helper.edit_db(
+            count_sku=db_helper.sku_db(chat.id) + cnt_sku,
+            count_hours=db_helper.hours_db(chat.id) + cnt_hours,
+            count_shifts=db_helper.shifts_db(chat.id) + number_of_shifts,
+            salary=db_helper.salary_db(chat.id) + salary,
             chat_id=chat.id
         )
         return ConversationHandler.END
@@ -148,13 +148,13 @@ def count_of_hours(update, context):
         return WORKING_HOURS
 
 
-def salary(update, context):
+def sssalary(update, context):
     """The method calculates the salary."""
     chat = update.effective_chat
-    if DBHelper.salary_db(chat.id):
+    if db_helper.salary_db(chat.id):
         context.bot.send_message(
             chat_id=chat.id,
-            text=DBHelper.db_salary_information(chat_id=chat.id)
+            text=db_helper.db_salary_information(chat_id=chat.id)
         )
     else:
         context.bot.send_message(
@@ -170,7 +170,7 @@ def edit_sku(update, context):
     context.bot.send_message(
         chat_id=chat.id,
         text='Введи новую ставку за единицу SKU.\n'
-        f'Сейчас она равна {DBHelper.per_sku_db(chat.id)}\n'
+        f'Сейчас она равна {db_helper.per_sku_db(chat.id)}\n'
         'Или нажми "отмена", если передумал',
         reply_markup=buttons
     )
@@ -179,7 +179,7 @@ def edit_sku(update, context):
 
 def new_rate_per_sku(update, context):
     """The method saves the new bid per SKU."""
-    global UNIT_RATE_SKU
+    global unit_rate_sku
     chat = update.effective_chat
     buttons = ReplyKeyboardRemove()
     message_error = 'Введи просто цифру(если хочешь ввести десятичное чилсло, '
@@ -194,17 +194,17 @@ def new_rate_per_sku(update, context):
             return ConversationHandler.END
         elif isinstance(float(update.message.text), float):
             context.user_data[EDIT_SKU] = update.message.text
-            UNIT_RATE_SKU = float(context.user_data[EDIT_SKU])
+            unit_rate_sku = float(context.user_data[EDIT_SKU])
             update.message.reply_text(
-                f'Твоя ставка изменена с {DBHelper.per_sku_db(chat.id)} на '
-                f'{UNIT_RATE_SKU}р. ✅',
+                f'Твоя ставка изменена с {db_helper.per_sku_db(chat.id)} на '
+                f'{unit_rate_sku}р. ✅',
                 reply_markup=buttons
             )
             salary = float(
-                DBHelper.sku_db(chat.id) * UNIT_RATE_SKU +
-                DBHelper.hours_db(chat.id) * HOURLY_RATE
+                db_helper.sku_db(chat.id) * unit_rate_sku +
+                db_helper.hours_db(chat.id) * hourly_rate
             )
-            DBHelper.rate_sku_db(UNIT_RATE_SKU, salary, chat.id)
+            db_helper.rate_sku_db(unit_rate_sku, salary, chat.id)
             return ConversationHandler.END
         else:
             update.message.reply_text(message_error)
@@ -221,16 +221,16 @@ def edit_hourly_rate(update, context):
     context.bot.send_message(
         chat_id=chat.id,
         text='Введи новую ставку за час работы.\n'
-        f'Сейчас она равна {DBHelper.per_hours_db(chat.id)}\n'
+        f'Сейчас она равна {db_helper.per_hours_db(chat.id)}\n'
         'Или нажми "отмена", если передумал',
         reply_markup=buttons
     )
-    return SAVE_HOURLY_RATE
+    return SAVE_hourly_rate
 
 
 def new_hourly_rate(update, context):
     """The method saves the new rate for the working hour."""
-    global HOURLY_RATE
+    global hourly_rate
     chat = update.effective_chat
     buttons = ReplyKeyboardRemove()
     message_error = 'Введи просто цифру(если хочешь ввести десятичное чилсло, '
@@ -244,25 +244,25 @@ def new_hourly_rate(update, context):
             )
             return ConversationHandler.END
         elif isinstance(float(update.message.text), float):
-            context.user_data[SAVE_HOURLY_RATE] = update.message.text
-            HOURLY_RATE = float(context.user_data[SAVE_HOURLY_RATE])
+            context.user_data[SAVE_hourly_rate] = update.message.text
+            hourly_rate = float(context.user_data[SAVE_hourly_rate])
             update.message.reply_text(
-                f'Твоя ставка изменена с {DBHelper.per_hours_db(chat.id)} на '
-                f'{HOURLY_RATE}р. ✅',
+                f'Твоя ставка изменена с {db_helper.per_hours_db(chat.id)} на '
+                f'{hourly_rate}р. ✅',
                 reply_markup=buttons
             )
             salary = float(
-                DBHelper.sku_db(chat.id) * UNIT_RATE_SKU +
-                DBHelper.hours_db(chat.id) * HOURLY_RATE
+                db_helper.sku_db(chat.id) * unit_rate_sku +
+                db_helper.hours_db(chat.id) * hourly_rate
             )
-            DBHelper.hourly_rate_db(HOURLY_RATE, salary, chat.id)
+            db_helper.hourly_rate_db(hourly_rate, salary, chat.id)
             return ConversationHandler.END
         else:
             update.message.reply_text(message_error)
-            return SAVE_HOURLY_RATE
+            return SAVE_hourly_rate
     except ValueError:
         update.message.reply_text(message_error)
-        return SAVE_HOURLY_RATE
+        return SAVE_hourly_rate
 
 
 def reset_counter(update, context):
@@ -282,16 +282,16 @@ def reset_counter(update, context):
 
 
 def confirm_reset(update, context):
-    global SALARY, CNT_SKU, CNT_HOURS, NUMBER_OF_SHIFTS
+    global salary, cnt_sku, cnt_hours, number_of_shifts
     chat = update.effective_chat
     buttons = ReplyKeyboardRemove()
     if update.message.text.lower() == 'да':
-        SALARY, CNT_SKU, CNT_HOURS, NUMBER_OF_SHIFTS = 0, 0, 0, 0
-        DBHelper.edit_db(
-            salary=SALARY,
-            count_sku=CNT_SKU,
-            count_hours=CNT_HOURS,
-            count_shifts=NUMBER_OF_SHIFTS,
+        salary, cnt_sku, cnt_hours, number_of_shifts = 0, 0, 0, 0
+        db_helper.edit_db(
+            salary=salary,
+            count_sku=cnt_sku,
+            count_hours=cnt_hours,
+            count_shifts=number_of_shifts,
             chat_id=chat.id
         )
         context.bot.send_message(
@@ -342,7 +342,7 @@ def main():
                 MessageHandler(Filters.all, new_rate_per_sku,
                                pass_user_data=True)
             ],
-            SAVE_HOURLY_RATE: [
+            SAVE_hourly_rate: [
                 MessageHandler(Filters.all, new_hourly_rate,
                                pass_user_data=True)
             ],
@@ -361,7 +361,7 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('start', start))
     updater.dispatcher.add_handler(CommandHandler('help', help_description))
     updater.dispatcher.add_handler(CommandHandler('commands', bot_commands))
-    updater.dispatcher.add_handler(CommandHandler('salary', salary))
+    updater.dispatcher.add_handler(CommandHandler('salary', sssalary))
 
     updater.start_polling()
 
